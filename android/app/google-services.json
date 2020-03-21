@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "702440322365",
+    "firebase_url": "https://help-e2206.firebaseio.com",
+    "project_id": "help-e2206",
+    "storage_bucket": "help-e2206.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702440322365:android:03e171d00aa9309d594154",
+        "android_client_info": {
+          "package_name": "com.help"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "702440322365-vlll1ioi1vn0u4j8u48ap7spj9euie1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcTOtLthe7aHC30ScynptVnIs5_in5jM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "702440322365-vlll1ioi1vn0u4j8u48ap7spj9euie1l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
