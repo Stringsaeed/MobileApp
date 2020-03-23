@@ -6,6 +6,7 @@ import {Post} from '@interfaces/post';
 import ReadMore from 'react-native-read-more-text';
 import {Caption, PostType, Text} from '@components/typography';
 import {
+  Image,
   StyleSheet,
   TextStyle,
   TouchableOpacity,
@@ -82,10 +83,28 @@ export const PostComponent: PostComponentType = ({
         </ReadMore>
       </View>
       <View style={{marginBottom: 16}} />
+      {item.image ? (
+        <Image
+          source={{uri: item.image}}
+          style={{width: '100%', height: 300, borderRadius: 20}}
+        />
+      ) : null}
+      <View style={{marginBottom: 16}} />
+
       <View style={styles.row}>
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <CommentIcon fill={theme.colors.text} width={20} height={20} />
+        <View
+          style={{
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
           <Text weight="regular">{item.comments}</Text>
+          <CommentIcon
+            style={{marginHorizontal: theme.spacing.medium}}
+            fill={theme.colors.text}
+            width={20}
+            height={20}
+          />
         </View>
         <Caption
           weight="light"

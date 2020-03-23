@@ -1,13 +1,10 @@
 import * as React from 'react';
-import {LoginScreen, RegisterScreen} from '@screens';
+import {LoginScreen, RegisterScreen, VerificationCodeScreen} from '@screens';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useTheme} from '@theme';
+import {ParamsList} from '@interfaces';
 
-type params = {
-  LOGIN_SCREEN: {};
-  REGISTER_SCREEN: {};
-};
-const AuthStack = createStackNavigator<params>();
+const AuthStack = createStackNavigator<ParamsList>();
 
 export default () => {
   const theme = useTheme();
@@ -29,6 +26,17 @@ export default () => {
         name="REGISTER_SCREEN"
         component={RegisterScreen}
         initialParams={{}}
+      />
+      <AuthStack.Screen
+        name="VERIFY_CODE"
+        component={VerificationCodeScreen}
+        initialParams={{
+          name: '',
+          email: '',
+          phone: '',
+          password: '',
+          password_confirmation: '',
+        }}
       />
     </AuthStack.Navigator>
   );

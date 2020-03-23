@@ -45,6 +45,7 @@ export default () => {
         name="@TABS/CREATE_POST"
         component={AddPostScreen}
         options={{
+          unmountOnBlur: true,
           tabBarLabel: 'Post',
           tabBarIcon: ({color, focused}) =>
             focused ? (

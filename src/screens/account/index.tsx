@@ -1,35 +1,44 @@
+import {useState} from 'react';
 import * as React from 'react';
 import {useTheme} from '@theme';
-import {View} from 'react-native';
-import MapView from 'react-native-maps';
-import MapDark from '@styles/map.dark.json';
-import MapLight from '@styles/map.light.json';
+import {List} from 'react-native-paper';
+import Auth from '@react-native-firebase/auth';
 import {useDispatch, useSelector} from 'react-redux';
+import Feather from 'react-native-vector-icons/Feather';
 import {Header, Screen, Text, Title} from '@components';
-import {ActionType, ReduxState, UserStore} from '@interfaces';
 import {useSafeArea} from 'react-native-safe-area-context';
+import {ActionType, ParamsList, ReduxState, UserStore} from '@interfaces';
+import Matrial from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-community/async-storage';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 
-export const ProfileScreen = () => {
+interface ProfileProps {
+  navigation: BottomTabNavigationProp<ParamsList>;
+}
+
+type ProfileScreenType = React.FunctionComponent<ProfileProps>;
+
+export const ProfileScreen: ProfileScreenType = ({navigation}) => {
+  const [pushNotifications, setPushNotifications] = useState<boolean>(true);
+
   const theme = useTheme();
   const {top} = useSafeArea();
   const dispatch = useDispatch();
   const {name, email, phone} = useSelector<ReduxState, UserStore>(
     state => state.user,
   );
+  const onLogOut = async () => {
+    if (Auth().currentUser) {
+      await Auth().signOut();
+    }
+    await AsyncStorage.removeItem('@USER_LOGIN');
+    dispatch<ActionType>({
+      type: '@LOGOUT/USER',
+    });
+  };
   return (
     <Screen type="static" style={{paddingTop: top + theme.spacing.medium}}>
-      <Header title="Profile">
-        <Header.Button
-          icon="settings"
-          size={24}
-          color={theme.colors.text}
-          onPress={() =>
-            dispatch<ActionType>({
-              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
-            })
-          }
-        />
-      </Header>
+      <Header title="Profile" />
       <Title
         weight="bold"
         style={{
@@ -54,50 +63,107 @@ export const ProfileScreen = () => {
         }}>
         {phone}
       </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <Text weight="bold">Dark Mode</Text>
-        <Text weight="regular">{theme.dark ? 'OFF' : 'ON'}</Text>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <Text weight="bold">Notifications</Text>
-        <Text weight="regular">{theme.dark ? 'OFF' : 'ON'}</Text>
-      </View>
-      <View
-        style={{
-          padding: 20,
-          flex: 1,
-          // overflow: 'hidden',
-        }}>
-        <MapView
-          style={{
-            flex: 1,
-            // padding: 0,
-            // borderTopRightRadius: 50,
-            // borderRadius: 400,
-            // margin: 0,
-            // elevation: 4,
-          }}
-          showsMyLocationButton
-          showsUserLocation
-          customMapStyle={theme.dark ? MapDark : MapLight}
-          initialRegion={{
-            latitude: 29.931309,
-            longitude: 31.281283,
-            latitudeDelta: 5,
-            longitudeDelta: 5,
-          }}
+      <List.Section>
+        <List.Subheader theme={theme}>Settings</List.Subheader>
+        <List.Item
+          title="Notifications"
+          onPress={() => setPushNotifications(!pushNotifications)}
+          right={_props => (
+            <List.Icon
+              {..._props}
+              icon={__props => <Feather {...__props} name="toggle-right" />}
+            />
+          )}
+          theme={theme}
+          left={_props => (
+            <List.Icon
+              {..._props}
+              style={{
+                ..._props.style,
+              }}
+              icon={__props => (
+                <Feather
+                  {...__props}
+                  name={pushNotifications ? 'bell' : 'bell-off'}
+                />
+              )}
+            />
+          )}
         />
-      </View>
+        <List.Item
+          title="Dark Mode"
+          theme={theme}
+          onPress={() => {
+            dispatch<ActionType>({
+              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
+            });
+          }}
+          right={_props => (
+            <List.Icon
+              {..._props}
+              icon={__props => (
+                <Feather
+                  {...__props}
+                  name={theme.dark ? 'toggle-right' : 'toggle-left'}
+                />
+              )}
+            />
+          )}
+          left={_props => (
+            <List.Icon
+              {..._props}
+              style={{
+                ..._props.style,
+              }}
+              icon={__props => <Matrial {...__props} name="theme-light-dark" />}
+            />
+          )}
+        />
+        <List.Item
+          title="My Posts"
+          theme={theme}
+          onPress={() => {
+            navigation.navigate('MY_POSTS', {});
+          }}
+          right={_props => (
+            <List.Icon
+              {..._props}
+              icon={__props => <Feather {...__props} name={'chevron-right'} />}
+            />
+          )}
+          left={_props => (
+            <List.Icon
+              {..._props}
+              style={{
+                ..._props.style,
+              }}
+              icon={__props => <Feather {...__props} name="edit-3" />}
+            />
+          )}
+        />
+        <List.Item
+          title="Logout"
+          theme={theme}
+          onPress={() => {
+            onLogOut();
+          }}
+          right={_props => (
+            <List.Icon
+              {..._props}
+              icon={__props => <Feather {...__props} name={'chevron-right'} />}
+            />
+          )}
+          left={_props => (
+            <List.Icon
+              {..._props}
+              style={{
+                ..._props.style,
+              }}
+              icon={__props => <Feather {...__props} name="log-out" />}
+            />
+          )}
+        />
+      </List.Section>
     </Screen>
   );
 };

@@ -9,15 +9,28 @@ import {
 } from 'react-native';
 import {Header, PostComponent, Screen} from '@components';
 import {useSafeArea} from 'react-native-safe-area-context';
-import {ActionType, HomeStore, ReduxState} from '@interfaces';
+import {ActionType, HomeStore, ParamsList, ReduxState} from '@interfaces';
 import {useDispatch, useSelector} from 'react-redux';
 import {useCallback, useEffect, useState} from 'react';
 import {getHome} from '@actions';
 import {Post} from '@interfaces/post';
+import {Snackbar} from 'react-native-paper';
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 
-interface HomeProps {}
+interface HomeProps {
+  navigation: BottomTabNavigationProp<ParamsList>;
+}
 
-export const HomeScreen = ({}: HomeProps) => {
+export const HomeScreen = ({navigation}: HomeProps) => {
+  const [visible, setVisible] = useState<boolean>(false);
+  const [message, setMessage] = useState<any>({
+    data: {
+      body: '',
+    },
+  });
   const [page, setPage] = useState<number>(1);
   const [offerHelp, setOfferHelp] = useState<boolean>(true);
   const [type_id, setType_id] = useState<string>('');
@@ -25,13 +38,37 @@ export const HomeScreen = ({}: HomeProps) => {
     'LOADING',
   );
 
+  const getNotification = async () => {
+    const notification = await messaging().getInitialNotification();
+    if (notification) {
+      // @ts-ignore
+      setMessage(notification);
+      setVisible(true);
+    }
+  };
+  React.useEffect(() => {
+    getNotification();
+    messaging().getInitialNotification();
+    messaging().onNotificationOpenedApp(
+      (_message: FirebaseMessagingTypes.RemoteMessage) => {
+        // @ts-ignore
+        setMessage(_message);
+        setVisible(true);
+      },
+    );
+    return messaging().onMessage(_message => {
+      // @ts-ignore
+      setMessage(_message);
+      setVisible(true);
+    });
+  }, []);
+
   const theme = useTheme();
   const {top} = useSafeArea();
   const dispatch = useDispatch();
-  const {isLoading, isRefreshing, isUpdating, data} = useSelector<
-    ReduxState,
-    HomeStore
-  >(state => state.home);
+  const {isLoading, isRefreshing, data} = useSelector<ReduxState, HomeStore>(
+    state => state.home,
+  );
 
   const getData = useCallback(() => {
     dispatch(getHome(type, page, 10, offerHelp, type_id));
@@ -53,51 +90,81 @@ export const HomeScreen = ({}: HomeProps) => {
   };
 
   return (
-    <Screen type="static" style={{paddingTop: top + theme.spacing.medium}}>
-      <StatusBar
-        animated
-        backgroundColor={theme.colors.background}
-        translucent
-        showHideTransition="slide"
-        barStyle={theme.dark ? 'light-content' : 'dark-content'}
-      />
-      <Header>
-        <Header.Button
-          icon="settings"
-          size={24}
-          color={theme.colors.text}
-          onPress={() =>
-            dispatch<ActionType>({
-              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
-            })
-          }
+    <>
+      <Screen
+        type="static"
+        contentContainerStyle={{flex: 1}}
+        style={{paddingTop: top + theme.spacing.medium}}>
+        <StatusBar
+          animated
+          backgroundColor={theme.colors.background}
+          translucent
+          showHideTransition="slide"
+          barStyle={theme.dark ? 'light-content' : 'dark-content'}
         />
-      </Header>
-      {isLoading ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator />
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={data}
-            renderItem={renderPost}
-            keyExtractor={item => item.id}
-            refreshControl={
-              <RefreshControl
-                colors={[theme.colors.primary]}
-                onRefresh={() => {
-                  setType('REFRESHING');
-                }}
-                refreshing={isRefreshing}
-                size={theme.spacing.large}
-              />
+        <Header>
+          <Header.Button
+            icon="settings"
+            size={24}
+            color={theme.colors.text}
+            onPress={() =>
+              dispatch<ActionType>({
+                type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
+              })
             }
-            contentContainerStyle={{flex: 1}}
           />
-        </>
-      )}
-    </Screen>
+        </Header>
+        {isLoading ? (
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <>
+            <FlatList
+              data={data}
+              renderItem={renderPost}
+              keyExtractor={item => item.id}
+              refreshControl={
+                <RefreshControl
+                  colors={[theme.colors.primary]}
+                  onRefresh={() => {
+                    setType('REFRESHING');
+                  }}
+                  refreshing={isRefreshing}
+                  size={theme.spacing.large}
+                />
+              }
+              onEndReached={() => {
+                if (data.length >= 10) {
+                  setPage(page + 1);
+                  setType('UPDATING');
+                }
+              }}
+              onEndReachedThreshold={0.5}
+              // contentContainerStyle={{flex: 1}}
+            />
+          </>
+        )}
+      </Screen>
+      <Snackbar
+        theme={{dark: theme.dark, colors: {accent: theme.colors.primary}}}
+        action={{
+          label: 'view',
+          onPress: () => {
+            // @ts-ignore
+            navigation.navigate('@POST_SCREEN', {
+              item: {
+                id: message.data.post_id,
+              },
+            });
+          },
+        }}
+        visible={visible}
+        onDismiss={() => setVisible(false)}>
+        {message.data && message.data.body}
+      </Snackbar>
+    </>
   );
 };
 

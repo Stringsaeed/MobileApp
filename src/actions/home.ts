@@ -7,7 +7,7 @@ export const getHome = (
   per_page: number = 10,
   offer_help: boolean = true,
   type_id: string,
-) => (dispatch: (arg0: {type: string; payload?: any}) => void) => {
+) => async (dispatch: (arg0: {type: string; payload?: any}) => void) => {
   dispatch({
     type: `@HOME/${type}`,
   });
@@ -40,7 +40,7 @@ export const getHome = (
       });
     },
     {
-      enableHighAccuracy: true,
+      timeout: 300,
     },
   );
 };

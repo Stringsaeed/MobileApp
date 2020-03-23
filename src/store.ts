@@ -1,18 +1,13 @@
-import {createStore, applyMiddleware, Store, compose} from 'redux';
-import {createEpicMiddleware} from 'redux-observable';
 import thunk from 'redux-thunk';
+import {applyMiddleware, compose, createStore, Store} from 'redux';
+
 import RootReducers from './reducers';
-import RootEpics from './epics';
 
 export const cfgStore = (): Store => {
   const initialState = {};
-  const epicMiddleware = createEpicMiddleware();
-  const store = createStore(
+  return createStore(
     RootReducers,
     initialState,
-    compose(applyMiddleware(epicMiddleware, thunk)),
+    compose(applyMiddleware(thunk)),
   );
-  // @ts-ignore
-  epicMiddleware.run(RootEpics);
-  return store;
 };

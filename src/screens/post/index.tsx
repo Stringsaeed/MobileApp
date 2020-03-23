@@ -5,10 +5,21 @@ import {Post} from '@interfaces/post';
 import {Snackbar} from 'react-native-paper';
 import {RouteProp} from '@react-navigation/native';
 import {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  StatusBar,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {Label, PostComponent, Screen, Title, Text, Form} from '@components';
 import {StackNavigationProp, useHeaderHeight} from '@react-navigation/stack';
-
+import {Divider} from '@components/divider';
+import {List, Avatar} from 'react-native-paper';
+import {Icons} from '@theme/icons';
+import Feather from 'react-native-vector-icons/Feather';
 type ParamsList = {
   '@POST_SCREEN': {
     item: Post;
@@ -21,7 +32,7 @@ interface PostProps {
 type PostScreenType = React.FunctionComponent<PostProps>;
 
 export const PostScreen: PostScreenType = ({route}) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [data, setData] = useState<Post>({
     id: '',
     title: '',
@@ -39,6 +50,7 @@ export const PostScreen: PostScreenType = ({route}) => {
   const theme = useTheme();
   const {item} = route.params;
   const headerHeight = useHeaderHeight();
+
   const getPost = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -67,24 +79,28 @@ export const PostScreen: PostScreenType = ({route}) => {
   }, [getPost]);
 
   return (
-    <Screen type="static" style={{paddingTop: headerHeight}}>
-      <PostComponent item={route.params.item} />
-      <View
-        style={{
-          paddingHorizontal: theme.spacing.medium,
-          marginBottom: theme.spacing.large,
-        }}>
-        <Title weight="bold">{item.title}</Title>
-        <Text weight="regular">{item.body}</Text>
-      </View>
-      <View />
+    <Screen
+      type="scroll"
+      // contentContainerStyle={{flex: 1}}
+      style={{
+        flex: 1,
+        paddingTop: theme.spacing.medium,
+        backgroundColor: theme.colors.background,
+      }}>
+      <StatusBar backgroundColor={theme.colors.background} />
       {isLoading ? (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator />
         </View>
       ) : (
-        <View>
-          <Label weight="bold">Comments:</Label>
+        <>
+          <PostComponent
+            item={{
+              ...data,
+              comments:
+                data.comments instanceof Array ? data.comments.length : 0,
+            }}
+          />
           <Form.Item
             label="Add comment"
             placeholder="place your comment here"
@@ -94,13 +110,40 @@ export const PostScreen: PostScreenType = ({route}) => {
               submitComment();
             }}
           />
-          <FlatList
-            data={data.comments}
-            renderItem={({item}: {item: any}) => {
-              return <View />;
-            }}
-          />
-        </View>
+          <Label weight="bold">Comments:</Label>
+          {(data.comments instanceof Array ? data.comments : []).map(
+            (_comment: {
+              id: string;
+              user: {name: string; id: string};
+              body: string;
+            }) => {
+              return (
+                <View key={_comment.id} style={{marginBottom: 5}}>
+                  <List.Item
+                    theme={theme}
+                    title={_comment.user.name}
+                    description={_comment.body}
+                    right={_props => {
+                      return (
+                        <List.Icon
+                          {..._props}
+                          icon={__props => <Feather name="edit" {...__props} />}
+                        />
+                      );
+                    }}
+                  />
+                </View>
+              );
+            },
+          )}
+          {/*<FlatList*/}
+          {/*  // style={{flex: 1}}*/}
+          {/*  // contentContainerStyle={{flex: 1}}*/}
+          {/*  data={data.comments instanceof Array ? data.comments : []}*/}
+          {/*  keyExtractor={item => item.id}*/}
+          {/*  renderItem={({item}: {item: any}) => {}}*/}
+          {/*/>*/}
+        </>
       )}
       <Snackbar
         duration={10000}
@@ -113,3 +156,11 @@ export const PostScreen: PostScreenType = ({route}) => {
     </Screen>
   );
 };
+
+const styles = StyleSheet.create<{[key: string]: ViewStyle | TextStyle}>({
+  row: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});

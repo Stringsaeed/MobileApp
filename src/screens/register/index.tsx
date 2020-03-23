@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import {RefObject, useRef} from 'react';
+import {useRef, useState} from 'react';
 import * as React from 'react';
 import {COLORS} from '@styles';
 import {useTheme} from '@theme';
@@ -13,24 +13,25 @@ import RegisterIllustration from '@theme/illustrations/register.svg';
 import {Button, Caption, Form, Header, Screen, Title} from '@components';
 import {
   findNodeHandle,
+  Platform,
   StatusBar,
   StyleSheet,
   TextStyle,
   ViewStyle,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import Auth from '@react-native-firebase/auth';
+import Messaging from '@react-native-firebase/messaging';
 import HelpApi from '@services/http';
 import AsyncStorage from '@react-native-community/async-storage';
+import {ActionType, ParamsList} from '@interfaces';
+import {VerificationCodeScreen} from '@screens';
+import {AxiosResponse} from 'axios';
+import {useDispatch} from 'react-redux';
+import {getUniqueId} from 'react-native-device-info';
 
 interface RegisterScreenProps {
-  navigation: StackNavigationProp<
-    {REGISTER_SCREEN: {setDark: (state: boolean) => void}},
-    'REGISTER_SCREEN'
-  >;
-  route: RouteProp<
-    {REGISTER_SCREEN: {setDark: (state: boolean) => void}},
-    'REGISTER_SCREEN'
-  >;
+  navigation: StackNavigationProp<ParamsList, 'REGISTER_SCREEN'>;
+  route: RouteProp<ParamsList, 'REGISTER_SCREEN'>;
 }
 
 type RegisterScreenType = React.FunctionComponent<RegisterScreenProps>;
@@ -71,6 +72,9 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
   const phoneRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [response, setResponse] = useState<AxiosResponse>();
+  const [confirm, setConfirm] = useState<any>();
   const theme = useTheme();
   const {top} = useSafeArea();
   const formikInstance = useFormik<{
@@ -83,11 +87,16 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
     validationSchema,
     onSubmit: async (values, formikHelpers) => {
       try {
-        const response = await HelpApi.post<{
+        const _response = await HelpApi.post<{
           data: {name: string; email: string; phone: string; token: string};
           message: string;
         }>('/users/register', values);
-        AsyncStorage.setItem('@USER_LOGIN', JSON.stringify(response.data.data));
+        setResponse(_response);
+        Auth()
+          .signInWithPhoneNumber('+2' + values.phone)
+          .then(_confirm => setConfirm(_confirm))
+          .catch(e => console.log(e));
+        setVisible(true);
       } catch (e) {
         console.log(e.response || e);
         if (e.response.status === 422) {
@@ -107,6 +116,7 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
     },
   });
 
+  const dispatch = useDispatch();
   const onFocus = (event: Event) => {
     if (scrollRef.current !== null) {
       // @ts-ignore
@@ -130,7 +140,7 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
           icon="settings"
           size={20}
           color={theme.colors.text}
-          onPress={() => route.params.setDark(!theme.dark)}
+          onPress={() => {}}
         />
       </Header>
       <Form
@@ -252,6 +262,47 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
           />
         </Button>
       </Form>
+      <VerificationCodeScreen
+        visible={visible}
+        dismiss={() => setVisible(false)}
+        onPressConfirm={code => {
+          setVisible(false);
+          confirm.confirm(code).then((_res: any) => {
+            HelpApi.interceptors.request.use(
+              config => {
+                config.headers.Authorization = `Bearer ${typeof response !==
+                  'undefined' && response.data.data.token}`;
+                return config;
+              },
+              () => {},
+            );
+            Messaging()
+              .getToken()
+              .then(token => {
+                HelpApi.post('/users/devices', {
+                  device_type: Platform.OS,
+                  fcm_token: token,
+                  device_id: getUniqueId(),
+                });
+              });
+            AsyncStorage.setItem(
+              '@USER_LOGIN',
+              JSON.stringify(
+                typeof response !== 'undefined' &&
+                  response.data &&
+                  response.data.data,
+              ),
+            );
+            dispatch<ActionType>({
+              type: '@LOGIN/USER',
+              payload:
+                typeof response !== 'undefined' &&
+                response.data &&
+                response.data.data,
+            });
+          });
+        }}
+      />
     </Screen>
   );
 };

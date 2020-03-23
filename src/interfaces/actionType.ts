@@ -12,6 +12,7 @@ export interface ActionType {
     | '@HOME/UPDATING'
     | '@HOME/REFRESHING'
     | '@HOME/LOADING'
+    | '@LOGOUT/USER'
     | '@POST_UTILS/ADD_TYPES';
   payload?: UserStore | ThemeManager | PostUtilsStore | HomeStore['data'];
 }

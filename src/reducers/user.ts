@@ -16,6 +16,11 @@ export default (state: UserStore = initialState, action: ActionType) => {
         ...state,
         ...action.payload,
       };
+    case '@LOGOUT/USER':
+      return {
+        ...state,
+        ...initialState,
+      };
     default:
       return state;
   }

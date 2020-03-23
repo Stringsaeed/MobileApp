@@ -13,6 +13,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import LoginIllustration from '@theme/illustrations/login.svg';
 import {Screen, Form, Caption, Title, Button, Header} from '@components';
 import {
+  Platform,
   StatusBar,
   StyleSheet,
   TextInput,
@@ -23,6 +24,8 @@ import {
 import {useDispatch} from 'react-redux';
 import {ActionType} from '@interfaces';
 import AsyncStorage from '@react-native-community/async-storage';
+import Messaging from '@react-native-firebase/messaging';
+import {getUniqueId} from 'react-native-device-info';
 
 interface LoginScreenProps {
   navigation: StackNavigationProp<
@@ -72,7 +75,23 @@ export const LoginScreen: LoginScreenType = ({navigation, route}) => {
           '@USER_LOGIN',
           JSON.stringify(response.data.data),
         );
-
+        HelpApi.interceptors.request.use(
+          config => {
+            config.headers.Authorization = `Bearer ${typeof response !==
+              'undefined' && response.data.data.token}`;
+            return config;
+          },
+          () => {},
+        );
+        Messaging()
+          .getToken()
+          .then(token => {
+            HelpApi.post('/users/devices', {
+              device_type: Platform.OS,
+              fcm_token: token,
+              device_id: getUniqueId(),
+            });
+          });
         dispatch<ActionType>({
           type: '@LOGIN/USER',
           payload: response.data.data,

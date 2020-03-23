@@ -15,7 +15,8 @@ export interface Post {
     id: string;
     name: string;
   };
+  image?: string;
   comment: [];
-  comments: any;
+  comments: [] | number;
   created_at: number;
 }

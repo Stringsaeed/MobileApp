@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {HomeStore} from '@interfaces';
 import {ActionType} from '@interfaces';
 
@@ -41,7 +42,7 @@ export default (state = initialState, action: ActionType) => {
             isUpdating: false,
             isLoading: false,
             isRefreshing: false,
-            data: [...new Set([...state.data, ...action.payload])],
+            data: _.uniqBy([...state.data, ...action.payload], 'id'),
           };
         }
       }
