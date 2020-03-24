@@ -7,24 +7,19 @@ import {RouteProp} from '@react-navigation/native';
 import {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   StatusBar,
   StyleSheet,
   TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
-import {Label, PostComponent, Screen, Title, Text, Form} from '@components';
-import {StackNavigationProp, useHeaderHeight} from '@react-navigation/stack';
-import {Divider} from '@components/divider';
-import {List, Avatar} from 'react-native-paper';
-import {Icons} from '@theme/icons';
+import {Label, PostComponent, Screen, Form} from '@components';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {List} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
-type ParamsList = {
-  '@POST_SCREEN': {
-    item: Post;
-  };
-};
+import Crashlytics from '@react-native-firebase/crashlytics';
+import {ParamsList} from '@interfaces';
+
 interface PostProps {
   navigation: StackNavigationProp<ParamsList, '@POST_SCREEN'>;
   route: RouteProp<ParamsList, '@POST_SCREEN'>;
@@ -49,7 +44,6 @@ export const PostScreen: PostScreenType = ({route}) => {
   const [message, setMessage] = useState<string>('');
   const theme = useTheme();
   const {item} = route.params;
-  const headerHeight = useHeaderHeight();
 
   const getPost = useCallback(async () => {
     try {
@@ -62,16 +56,21 @@ export const PostScreen: PostScreenType = ({route}) => {
       console.log(test);
     } catch (e) {
       console.log(e.response || e);
+      Crashlytics().recordError(e);
     }
   }, [item.id]);
 
   const submitComment = useCallback(async () => {
-    await HelpApi.post(`/posts/${item.id}/comments`, {
-      body: comment,
-    });
-    setMessage('Commented Successfully');
-    setComment('');
-    getPost();
+    try {
+      await HelpApi.post(`/posts/${item.id}/comments`, {
+        body: comment,
+      });
+      setMessage('Commented Successfully');
+      setComment('');
+      getPost();
+    } catch (e) {
+      Crashlytics().recordError(e);
+    }
   }, [comment, getPost, item.id]);
 
   useEffect(() => {
@@ -136,13 +135,6 @@ export const PostScreen: PostScreenType = ({route}) => {
               );
             },
           )}
-          {/*<FlatList*/}
-          {/*  // style={{flex: 1}}*/}
-          {/*  // contentContainerStyle={{flex: 1}}*/}
-          {/*  data={data.comments instanceof Array ? data.comments : []}*/}
-          {/*  keyExtractor={item => item.id}*/}
-          {/*  renderItem={({item}: {item: any}) => {}}*/}
-          {/*/>*/}
         </>
       )}
       <Snackbar

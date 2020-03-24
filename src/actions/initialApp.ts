@@ -1,22 +1,37 @@
 import HelpApi from '@services/http';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ThunkAction, ThunkDispatch} from 'redux-thunk';
-import {PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {BackHandler, Platform} from 'react-native';
 import Messaging from '@react-native-firebase/messaging';
 import {getUniqueId} from 'react-native-device-info';
+import Crashlytics from '@react-native-firebase/crashlytics';
+import {getPostTypes} from './postUtils';
 
-export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
-  dispatch: ThunkDispatch<any, any, any>,
-): Promise<void> => {
-  try {
-    dispatch({
-      type: '@INIT_APP/LOADING',
-    });
-    const item = await AsyncStorage.getItem('@USER_LOGIN');
-    // Geolocation.requestAuthorization();
+const checkPermissionIos = async () => {
+  if (Platform.OS === 'ios') {
+    const result = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    console.log(result);
+    switch (result) {
+      case RESULTS.DENIED:
+        console.log(
+          'The permission has not been requested / is denied but requestable',
+        );
+        break;
+      case RESULTS.GRANTED:
+        console.log('The permission is granted');
+        break;
+      case RESULTS.BLOCKED:
+        console.log('The permission is denied and not requestable anymore');
+        break;
+    }
+  }
+  return;
+};
+
+const checkPermissionAndroid = async () => {
+  if (Platform.OS === 'android') {
     const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-    // check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
     switch (result) {
       case RESULTS.DENIED:
         console.log(
@@ -32,6 +47,27 @@ export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
         BackHandler.exitApp();
         break;
     }
+  }
+  return;
+};
+
+export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
+  dispatch: ThunkDispatch<any, any, any>,
+): Promise<void> => {
+  try {
+    dispatch({
+      type: '@INIT_APP/LOADING',
+    });
+    const item = await AsyncStorage.getItem('@USER_LOGIN');
+
+    if (Platform.OS === 'android') {
+      await checkPermissionAndroid();
+    } else if (Platform.OS === 'ios') {
+      await checkPermissionIos();
+    } else {
+      Crashlytics().log('Platform is not native');
+    }
+
     if (item) {
       const user = JSON.parse(item);
       HelpApi.interceptors.request.use(
@@ -50,12 +86,7 @@ export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
             device_id: getUniqueId(),
           });
         });
-      const response = await HelpApi.get('/posts/types');
-      console.log(response);
-      dispatch({
-        type: '@POST_UTILS/ADD_TYPES',
-        payload: response.data.data,
-      });
+      dispatch(getPostTypes());
       dispatch({
         type: '@LOGIN/USER',
         payload: user,
@@ -66,6 +97,7 @@ export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
     });
   } catch (e) {
     console.log(e.response || e);
+    Crashlytics().recordError(e);
     dispatch({
       type: '@INIT_APP/DONE',
     });

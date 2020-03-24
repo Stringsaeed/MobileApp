@@ -26,6 +26,8 @@ import {ActionType} from '@interfaces';
 import AsyncStorage from '@react-native-community/async-storage';
 import Messaging from '@react-native-firebase/messaging';
 import {getUniqueId} from 'react-native-device-info';
+import Crashlytics from '@react-native-firebase/crashlytics';
+import {getPostTypes} from '@actions';
 
 interface LoginScreenProps {
   navigation: StackNavigationProp<
@@ -92,12 +94,14 @@ export const LoginScreen: LoginScreenType = ({navigation, route}) => {
               device_id: getUniqueId(),
             });
           });
+        dispatch(getPostTypes());
         dispatch<ActionType>({
           type: '@LOGIN/USER',
           payload: response.data.data,
         });
         console.log(response);
       } catch (e) {
+        Crashlytics().recordError(e);
         console.log(e.response || e);
       }
       formikHelpers.setSubmitting(false);

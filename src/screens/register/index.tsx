@@ -28,6 +28,8 @@ import {VerificationCodeScreen} from '@screens';
 import {AxiosResponse} from 'axios';
 import {useDispatch} from 'react-redux';
 import {getUniqueId} from 'react-native-device-info';
+import Crashlytics from '@react-native-firebase/crashlytics';
+import {getPostTypes} from '@actions';
 
 interface RegisterScreenProps {
   navigation: StackNavigationProp<ParamsList, 'REGISTER_SCREEN'>;
@@ -95,7 +97,10 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
         Auth()
           .signInWithPhoneNumber('+2' + values.phone)
           .then(_confirm => setConfirm(_confirm))
-          .catch(e => console.log(e));
+          .catch(e => {
+            Crashlytics().recordError(e);
+            console.log(e);
+          });
         setVisible(true);
       } catch (e) {
         console.log(e.response || e);
@@ -103,6 +108,8 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
           for (let key in e.response.data.errors) {
             formikHelpers.setFieldError(key, e.response.data.errors[key][0]);
           }
+        } else {
+          Crashlytics().recordError(e);
         }
       }
       formikHelpers.setSubmitting(false);
@@ -158,7 +165,6 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
         <Title weight="black" style={styles.title}>
           Welcome To Help!
         </Title>
-
         <Form.Item
           TIRef={nameRef}
           label="Name"
@@ -238,11 +244,9 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
           onBlur={formikInstance.handleBlur('password_confirmation')}
           onChangeText={formikInstance.handleChange('password_confirmation')}
         />
-
         <Caption weight="regular">
           Already have account? <Caption weight="bold">Sign In</Caption>
         </Caption>
-
         <Button
           style={styles.button}
           loadingColor={theme.colors.background}
@@ -264,6 +268,7 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
       </Form>
       <VerificationCodeScreen
         visible={visible}
+        phone={formikInstance.values.phone}
         dismiss={() => setVisible(false)}
         onPressConfirm={code => {
           setVisible(false);
@@ -274,7 +279,9 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
                   'undefined' && response.data.data.token}`;
                 return config;
               },
-              () => {},
+              e => {
+                Crashlytics().recordError(e);
+              },
             );
             Messaging()
               .getToken()
@@ -284,6 +291,9 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
                   fcm_token: token,
                   device_id: getUniqueId(),
                 });
+              })
+              .catch(e => {
+                Crashlytics().recordError(e);
               });
             AsyncStorage.setItem(
               '@USER_LOGIN',
@@ -293,6 +303,7 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
                   response.data.data,
               ),
             );
+            dispatch(getPostTypes());
             dispatch<ActionType>({
               type: '@LOGIN/USER',
               payload:

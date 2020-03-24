@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
@@ -119,6 +120,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+crashlytics {
+  enableNdk true
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -151,10 +156,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('help_app.keystore')
-            storePassword 'Rana27894'
-            keyAlias 'help-alias'
-            keyPassword 'Rana27894'
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
     }
     buildTypes {

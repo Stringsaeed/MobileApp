@@ -29,7 +29,6 @@ export default () => {
             backgroundColor: theme.colors.background,
             elevation: 0,
           },
-          // headerTransparent: true,
         })}
       />
       <RootStack.Screen

@@ -1,17 +1,15 @@
 import * as React from 'react';
 import {Icons} from '@theme/icons';
-import {
-  AddPostScreen,
-  HomeScreen,
-  NotificationsScreen,
-  ProfileScreen,
-} from '@screens';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
+import HomeStack from './homeStack';
+import AccountStack from './accountStack';
+import CreatePostStack from './createPostStack';
+import NotificationsStack from './notificationsStack';
 
 const Tabs = createBottomTabNavigator();
 
 export default () => {
-  // const theme = useTheme();
   const Home = Icons.home;
   const HomeOutlined = Icons.homeOutlined;
   const FocusedAddPost = Icons.addFocused;
@@ -30,7 +28,7 @@ export default () => {
       }}>
       <Tabs.Screen
         name="@TABS/HOME"
-        component={HomeScreen}
+        component={HomeStack}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({color, focused}) =>
@@ -43,9 +41,8 @@ export default () => {
       />
       <Tabs.Screen
         name="@TABS/CREATE_POST"
-        component={AddPostScreen}
+        component={CreatePostStack}
         options={{
-          unmountOnBlur: true,
           tabBarLabel: 'Post',
           tabBarIcon: ({color, focused}) =>
             focused ? (
@@ -57,7 +54,7 @@ export default () => {
       />
       <Tabs.Screen
         name="@TABS/NOTIFICATIONS"
-        component={NotificationsScreen}
+        component={NotificationsStack}
         options={{
           tabBarLabel: 'notifications',
           tabBarIcon: ({color, focused}) =>
@@ -70,7 +67,7 @@ export default () => {
       />
       <Tabs.Screen
         name="@TABS/PROFILE"
-        component={ProfileScreen}
+        component={AccountStack}
         options={{
           tabBarLabel: 'Account',
           tabBarIcon: ({color, focused}) =>

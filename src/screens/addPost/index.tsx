@@ -1,33 +1,19 @@
+import * as yup from 'yup';
 import * as React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  TextInput,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {
-  Caption,
-  Form,
-  Header,
-  Label,
-  PostType,
-  Screen,
-  Text,
-} from '@components';
-import {useTheme} from '@theme';
-import {useSafeArea} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
-import {ActionType, ParamsList, PostUtilsStore, ReduxState} from '@interfaces';
 import {useState} from 'react';
 import {COLORS} from '@styles';
-import HelpApi from '@services/http';
-import Geolocation from '@react-native-community/geolocation';
-import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
-import {Post} from '@interfaces/post';
+import {useTheme} from '@theme';
 import {useFormik} from 'formik';
-import * as yup from 'yup';
+import HelpApi from '@services/http';
+import {Post} from '@interfaces/post';
+import {useSelector} from 'react-redux';
 import {Switch, Button} from 'react-native-paper';
+import Crashlytics from '@react-native-firebase/crashlytics';
+import Geolocation from '@react-native-community/geolocation';
+import {ParamsList, PostUtilsStore, ReduxState} from '@interfaces';
+import {StyleSheet, TextInput, View, ViewStyle} from 'react-native';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {Caption, Form, Label, PostType, Screen, Text} from '@components';
 
 type PostPostRequest = {
   title: string;
@@ -67,15 +53,16 @@ const submitPost: (
           headers: {'Content-Type': 'multipart/form-data'},
         });
         console.log(response);
-        // TODO: if success navigate to post screen
         onSuccess(response.data.data);
       } catch (e) {
         onError();
+        Crashlytics().recordError(e);
         console.log(e.response || e);
       }
     },
     e => {
       console.log(e);
+      Crashlytics().log(e.message);
       onError();
     },
     {
@@ -89,8 +76,6 @@ export const AddPostScreen: React.FunctionComponent<{
 }> = ({navigation}) => {
   const [offerHelp, setOfferHelp] = useState<boolean>(true);
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const {top} = useSafeArea();
   const postUtilsStore = useSelector<ReduxState, PostUtilsStore>(
     state => state.postUtils,
   );
@@ -131,19 +116,7 @@ export const AddPostScreen: React.FunctionComponent<{
   });
 
   return (
-    <Screen type="static" style={{paddingTop: top + theme.spacing.medium}}>
-      <Header title="New Post:">
-        <Header.Button
-          icon="settings"
-          size={24}
-          color={theme.colors.text}
-          onPress={() =>
-            dispatch<ActionType>({
-              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
-            })
-          }
-        />
-      </Header>
+    <Screen type="static" style={{paddingTop: theme.spacing.medium}}>
       <Form
         style={{
           paddingHorizontal: theme.spacing.medium,
@@ -175,6 +148,7 @@ export const AddPostScreen: React.FunctionComponent<{
           <Label weight="black">Offer Help ?</Label>
           <Switch
             value={offerHelp}
+            theme={theme}
             color={theme.colors.primary}
             onValueChange={() => setOfferHelp(!offerHelp)}
           />

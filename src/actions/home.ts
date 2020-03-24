@@ -1,5 +1,6 @@
 import HelpApi from '@services/http';
 import Geolocation from '@react-native-community/geolocation';
+import Crashlytics from '@react-native-firebase/crashlytics';
 
 export const getHome = (
   type: 'LOADING' | 'REFRESHING' | 'UPDATING' = 'LOADING',
@@ -35,6 +36,7 @@ export const getHome = (
     },
     error => {
       console.log(error);
+      Crashlytics().log(error.message);
       dispatch({
         type: '@HOME/ERROR',
       });

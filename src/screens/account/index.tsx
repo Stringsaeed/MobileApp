@@ -3,10 +3,9 @@ import * as React from 'react';
 import {useTheme} from '@theme';
 import {List} from 'react-native-paper';
 import Auth from '@react-native-firebase/auth';
+import {Screen, Text, Title} from '@components';
 import {useDispatch, useSelector} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
-import {Header, Screen, Text, Title} from '@components';
-import {useSafeArea} from 'react-native-safe-area-context';
 import {ActionType, ParamsList, ReduxState, UserStore} from '@interfaces';
 import Matrial from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -22,7 +21,6 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
   const [pushNotifications, setPushNotifications] = useState<boolean>(true);
 
   const theme = useTheme();
-  const {top} = useSafeArea();
   const dispatch = useDispatch();
   const {name, email, phone} = useSelector<ReduxState, UserStore>(
     state => state.user,
@@ -37,8 +35,7 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
     });
   };
   return (
-    <Screen type="static" style={{paddingTop: top + theme.spacing.medium}}>
-      <Header title="Profile" />
+    <Screen type="static" style={{paddingTop: theme.spacing.medium}}>
       <Title
         weight="bold"
         style={{
@@ -71,7 +68,12 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
           right={_props => (
             <List.Icon
               {..._props}
-              icon={__props => <Feather {...__props} name="toggle-right" />}
+              icon={__props => (
+                <Feather
+                  {...__props}
+                  name={pushNotifications ? 'toggle-right' : 'toggle-left'}
+                />
+              )}
             />
           )}
           theme={theme}

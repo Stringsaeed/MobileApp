@@ -9,7 +9,7 @@ interface ScreenProps extends ScrollViewProps {
   children: React.ReactNode;
 }
 
-export const Screen = ({type, children, ...props}: ScreenProps) => {
+export const Screen = React.memo(({type, children, ...props}: ScreenProps) => {
   const theme = useTheme();
   const {bottom, top} = useSafeArea();
   useMemo(() => {
@@ -21,7 +21,7 @@ export const Screen = ({type, children, ...props}: ScreenProps) => {
       paddingTop: top,
       paddingBottom: bottom,
       backgroundColor: theme.colors.background,
-      paddingHorizontal: theme.spacing.medium,
+      paddingHorizontal: theme.spacing.large,
       overflow: 'visible',
     },
     props.style,
@@ -40,4 +40,4 @@ export const Screen = ({type, children, ...props}: ScreenProps) => {
       </View>
     );
   }
-};
+});
