@@ -1,6 +1,9 @@
 PODS:
   - boost-for-react-native (1.63.0)
+  - Crashlytics (3.14.0):
+    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
+  - Fabric (1.10.2)
   - FBLazyVector (0.61.5)
   - FBReactNativeSpec (0.61.5):
     - Folly (= 2018.10.22.00)
@@ -313,23 +316,33 @@ PODS:
     - React
   - RNCMaskedView (0.1.7):
     - React
-  - RNFBAnalytics (6.3.4):
+  - RNDeviceInfo (5.5.3):
+    - React
+  - RNFBAnalytics (6.4.0-rc0):
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBApp (6.3.4):
+  - RNFBApp (6.4.0-rc0):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBAuth (6.3.4):
+  - RNFBAuth (6.4.0-rc0):
     - Firebase/Auth (~> 6.13.0)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.3.4):
+  - RNFBCrashlytics (6.4.0-rc0):
+    - Crashlytics (~> 3.14.0)
+    - Fabric (~> 1.10.2)
+    - Firebase/Core (~> 6.13.0)
+    - React
+    - RNFBApp
+  - RNFBMessaging (6.4.0-rc0):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
   - RNGestureHandler (1.6.0):
+    - React
+  - RNPermissions (2.0.10):
     - React
   - RNReanimated (1.7.0):
     - React
@@ -373,11 +386,14 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -387,6 +403,8 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
+    - Crashlytics
+    - Fabric
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -462,16 +480,22 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFBAnalytics:
     :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
     :path: "../node_modules/@react-native-firebase/auth"
+  RNFBCrashlytics:
+    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -485,7 +509,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBLazyVector: aaeaf388755e4f29cd74acbc9e3b8da6d807c37f
   FBReactNativeSpec: 118d0d177724c2d67f08a59136eb29ef5943ec75
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
@@ -530,11 +556,14 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNCAsyncStorage: e0dd7c8a36543b4ef84969acd9f8aceba3a92dc2
   RNCMaskedView: 76c40a1d41c3e2535df09246a2b5487f04de0814
-  RNFBAnalytics: b8bad44e6653af73219b1a7af24bf3452cb02c1b
-  RNFBApp: 7d4006751de8bb5cafa2e8d2e7d94ee250df81db
-  RNFBAuth: ed8b865db45f7ded9dbf535e390cba2ba672aede
-  RNFBMessaging: 51cc7f6beaf4c4feac6f18ea941bba5854e3d9c6
+  RNDeviceInfo: 310c1f43d418d950a193c7650de2f9559c906048
+  RNFBAnalytics: 609e65132a88d38ccae28b21497b1f06fa618b92
+  RNFBApp: c26cad97ccfc03e4f0dab827ab45667df81c4c57
+  RNFBAuth: 739d4361cc5795efec16ab0df24e5963e8831a1f
+  RNFBCrashlytics: 200e9b935b4e21f25a9517940e379fe0ffcd3d31
+  RNFBMessaging: 864a500b1b32c0f458fb003c65009bbb5f197edb
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+  RNPermissions: 1008d3511fee0e25739cf81c4af0d1b2248f1053
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 03bf608b92ac0acf323f47d8f5b63a8f829340c8
   RNSVG: 7e16ddfc6e00d5aa69c9eb83e699bcce5dcb85d4
@@ -543,4 +572,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0e0c5eb710661dad9b2fa3618fb5e144bf265769
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
