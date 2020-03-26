@@ -156,7 +156,7 @@ export function MyPostsScreen() {
     <Screen
       type="static"
       contentContainerStyle={{flex: 1}}
-      style={{paddingTop: top + theme.spacing.medium}}>
+      style={{paddingTop: theme.spacing.medium}}>
       <StatusBar
         animated
         backgroundColor={theme.colors.background}
@@ -164,7 +164,7 @@ export function MyPostsScreen() {
         showHideTransition="slide"
         barStyle={theme.dark ? 'light-content' : 'dark-content'}
       />
-      <Header title="My Posts" />
+      {/*<Header title="My Posts" />*/}
       {state.isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator color={theme.colors.text} />

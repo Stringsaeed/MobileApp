@@ -26,6 +26,7 @@ interface FormItemProps extends TextInputProps {
   onSubmitEditing?: any;
   onChangeText?: any;
   onFocus?: any;
+  container?: ViewStyle;
 }
 
 type FormItemType = FunctionComponent<FormItemProps>;
@@ -44,7 +45,7 @@ const styles = StyleSheet.create<{
     // borderRadius: 5,
     height: 'auto',
     padding: 8,
-    backgroundColor: COLORS.white,
+    // backgroundColor: COLORS.white,
   },
   input: {
     color: COLORS.black,
@@ -53,7 +54,7 @@ const styles = StyleSheet.create<{
   },
 });
 
-const FormItem: FormItemType = ({label, error, TIRef, ...props}) => {
+const FormItem: FormItemType = ({label, error, TIRef, container, ...props}) => {
   const theme = useTheme();
   return (
     <View>
@@ -61,10 +62,11 @@ const FormItem: FormItemType = ({label, error, TIRef, ...props}) => {
         style={[
           styles.container,
           {
-            backgroundColor: theme.colors.background,
+            // backgroundColor: theme.colors.onSurface,
             marginBottom: theme.spacing.large,
             justifyContent: 'space-between',
           },
+          container,
         ]}>
         <Label
           weight="bold"

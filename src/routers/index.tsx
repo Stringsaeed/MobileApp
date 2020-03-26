@@ -8,6 +8,7 @@ import messaging from '@react-native-firebase/messaging';
 import analytics from '@react-native-firebase/analytics';
 import {NavigationContainer} from '@react-navigation/native';
 import {InitialApp, ReduxState, ThemeManager, UserStore} from '@interfaces';
+import {Provider as PaperProvider} from 'react-native-paper';
 
 import Root from './root';
 import AuthStack from './authStack';
@@ -52,22 +53,25 @@ export const NavigatedApp = ({}) => {
     dispatch(initialApp());
   }, [dispatch]);
 
+  // @ts-ignore
   return (
-    <ThemeProvider theme={theme}>
-      <NavigationContainer
-        ref={navigationRef}
-        onStateChange={state => {
-          const previousRouteName = routeNameRef.current;
-          const currentRouteName = getActiveRouteName(state);
+    <PaperProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <NavigationContainer
+          ref={navigationRef}
+          onStateChange={state => {
+            const previousRouteName = routeNameRef.current;
+            const currentRouteName = getActiveRouteName(state);
 
-          if (previousRouteName !== currentRouteName) {
-            analytics().setCurrentScreen(currentRouteName, currentRouteName);
-          }
-          routeNameRef.current = currentRouteName;
-        }}
-        theme={theme}>
-        {isLoading ? <SplashStack /> : token ? <Root /> : <AuthStack />}
-      </NavigationContainer>
-    </ThemeProvider>
+            if (previousRouteName !== currentRouteName) {
+              analytics().setCurrentScreen(currentRouteName, currentRouteName);
+            }
+            routeNameRef.current = currentRouteName;
+          }}
+          theme={theme}>
+          {isLoading ? <SplashStack /> : token ? <Root /> : <AuthStack />}
+        </NavigationContainer>
+      </ThemeProvider>
+    </PaperProvider>
   );
 };

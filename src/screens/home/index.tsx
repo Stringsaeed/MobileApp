@@ -18,6 +18,7 @@ import messaging, {
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import HomeEmpty from '@theme/illustrations/undraw_body_text_l3ld.svg';
 
 interface HomeProps {
   navigation: BottomTabNavigationProp<ParamsList>;
@@ -92,7 +93,7 @@ export const HomeScreen = ({navigation}: HomeProps) => {
       <Screen
         type="static"
         contentContainerStyle={{flex: 1}}
-        style={{paddingTop: theme.spacing.medium}}>
+        style={{paddingTop: theme.spacing.small}}>
         <StatusBar
           animated
           backgroundColor={theme.colors.background}
@@ -119,6 +120,20 @@ export const HomeScreen = ({navigation}: HomeProps) => {
                   }}
                   refreshing={isRefreshing}
                   size={theme.spacing.large}
+                />
+              }
+              contentContainerStyle={
+                data.length
+                  ? {}
+                  : {flex: 1, justifyContent: 'center', alignItems: 'center'}
+              }
+              ListEmptyComponent={
+                <HomeEmpty
+                  width={300}
+                  height={300}
+                  // fill={theme.colors.background}
+                  // fillRule="nonzero"
+                  style={{flex: 1, alignSelf: 'center'}}
                 />
               }
               onEndReached={() => {

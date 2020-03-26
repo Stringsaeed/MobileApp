@@ -13,7 +13,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {Label, PostComponent, Screen, Form} from '@components';
+import {Label, PostComponent, Screen, Form, Text} from '@components';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {List} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
@@ -108,33 +108,46 @@ export const PostScreen: PostScreenType = ({route}) => {
             onSubmitEditing={() => {
               submitComment();
             }}
+            container={{paddingHorizontal: 0}}
           />
-          <Label weight="bold">Comments:</Label>
-          {(data.comments instanceof Array ? data.comments : []).map(
-            (_comment: {
-              id: string;
-              user: {name: string; id: string};
-              body: string;
-            }) => {
-              return (
-                <View key={_comment.id} style={{marginBottom: 5}}>
-                  <List.Item
-                    theme={theme}
-                    title={_comment.user.name}
-                    description={_comment.body}
-                    right={_props => {
-                      return (
-                        <List.Icon
-                          {..._props}
-                          icon={__props => <Feather name="edit" {...__props} />}
-                        />
-                      );
-                    }}
-                  />
-                </View>
-              );
-            },
-          )}
+          <View>
+            <Label weight="bold">Comments:</Label>
+            {data.comments instanceof Array && data.comments.length ? (
+              data.comments.map(
+                (_comment: {
+                  id: string;
+                  user: {name: string; id: string};
+                  body: string;
+                }) => {
+                  return (
+                    <View key={_comment.id} style={{marginBottom: 5}}>
+                      <List.Item
+                        theme={theme}
+                        title={_comment.user.name}
+                        description={_comment.body}
+                        right={_props => {
+                          return (
+                            <List.Icon
+                              {..._props}
+                              icon={__props => (
+                                <Feather name="edit" {...__props} />
+                              )}
+                            />
+                          );
+                        }}
+                      />
+                    </View>
+                  );
+                },
+              )
+            ) : (
+              <View>
+                <Text weight="bold" style={{alignSelf: 'center'}}>
+                  This post has no comments
+                </Text>
+              </View>
+            )}
+          </View>
         </>
       )}
       <Snackbar

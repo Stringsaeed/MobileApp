@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import * as React from 'react';
 import {useTheme} from '@theme';
-import {List} from 'react-native-paper';
+import {List, Switch} from 'react-native-paper';
 import Auth from '@react-native-firebase/auth';
 import {Screen, Text, Title} from '@components';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,6 +10,7 @@ import {ActionType, ParamsList, ReduxState, UserStore} from '@interfaces';
 import Matrial from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import Crashlytics from '@react-native-firebase/crashlytics';
 
 interface ProfileProps {
   navigation: BottomTabNavigationProp<ParamsList>;
@@ -35,137 +36,154 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
     });
   };
   return (
-    <Screen type="static" style={{paddingTop: theme.spacing.medium}}>
-      <Title
-        weight="bold"
+    <>
+      <Screen
+        type="static"
         style={{
-          paddingTop: theme.spacing.large,
-          marginBottom: theme.spacing.medium,
+          paddingTop: 0,
+          flex: 1,
+          paddingHorizontal: 0,
         }}>
-        {name}
-      </Title>
-      <Text
-        weight="regular"
-        style={{
-          fontFamily: 'RobotoMono-Regular',
-          textTransform: 'lowercase',
-        }}>
-        {email}
-      </Text>
-      <Text
-        weight="regular"
-        style={{
-          fontFamily: 'RobotoMono-Regular',
-          textTransform: 'lowercase',
-        }}>
-        {phone}
-      </Text>
-      <List.Section>
-        <List.Subheader theme={theme}>Settings</List.Subheader>
-        <List.Item
-          title="Notifications"
-          onPress={() => setPushNotifications(!pushNotifications)}
-          right={_props => (
-            <List.Icon
-              {..._props}
-              icon={__props => (
-                <Feather
-                  {...__props}
-                  name={pushNotifications ? 'toggle-right' : 'toggle-left'}
-                />
-              )}
-            />
-          )}
-          theme={theme}
-          left={_props => (
-            <List.Icon
-              {..._props}
-              style={{
-                ..._props.style,
-              }}
-              icon={__props => (
-                <Feather
-                  {...__props}
-                  name={pushNotifications ? 'bell' : 'bell-off'}
-                />
-              )}
-            />
-          )}
-        />
-        <List.Item
-          title="Dark Mode"
-          theme={theme}
-          onPress={() => {
-            dispatch<ActionType>({
-              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
-            });
-          }}
-          right={_props => (
-            <List.Icon
-              {..._props}
-              icon={__props => (
-                <Feather
-                  {...__props}
-                  name={theme.dark ? 'toggle-right' : 'toggle-left'}
-                />
-              )}
-            />
-          )}
-          left={_props => (
-            <List.Icon
-              {..._props}
-              style={{
-                ..._props.style,
-              }}
-              icon={__props => <Matrial {...__props} name="theme-light-dark" />}
-            />
-          )}
-        />
-        <List.Item
-          title="My Posts"
-          theme={theme}
-          onPress={() => {
-            navigation.navigate('MY_POSTS', {});
-          }}
-          right={_props => (
-            <List.Icon
-              {..._props}
-              icon={__props => <Feather {...__props} name={'chevron-right'} />}
-            />
-          )}
-          left={_props => (
-            <List.Icon
-              {..._props}
-              style={{
-                ..._props.style,
-              }}
-              icon={__props => <Feather {...__props} name="edit-3" />}
-            />
-          )}
-        />
-        <List.Item
-          title="Logout"
-          theme={theme}
-          onPress={() => {
-            onLogOut();
-          }}
-          right={_props => (
-            <List.Icon
-              {..._props}
-              icon={__props => <Feather {...__props} name={'chevron-right'} />}
-            />
-          )}
-          left={_props => (
-            <List.Icon
-              {..._props}
-              style={{
-                ..._props.style,
-              }}
-              icon={__props => <Feather {...__props} name="log-out" />}
-            />
-          )}
-        />
-      </List.Section>
-    </Screen>
+        <List.Section>
+          <List.Subheader theme={theme}>Account</List.Subheader>
+          <List.Item
+            left={__props => <List.Icon {...__props} icon="account" />}
+            title={name}
+            titleStyle={{fontWeight: '700'}}
+          />
+          <List.Item
+            left={__props => <List.Icon {...__props} icon="email" />}
+            title={email}
+            titleStyle={{
+              fontFamily: 'RobotoMono-Regular',
+              textTransform: 'lowercase',
+            }}
+          />
+          <List.Item
+            left={__props => <List.Icon {...__props} icon="phone" />}
+            title={phone}
+            titleStyle={{
+              fontFamily: 'RobotoMono-Regular',
+              textTransform: 'lowercase',
+            }}
+          />
+        </List.Section>
+        <List.Section>
+          <List.Subheader theme={theme}>Settings</List.Subheader>
+          <List.Item
+            title="Notifications"
+            // onPress={() => setPushNotifications(!pushNotifications)}
+            right={_props => (
+              <Switch
+                {..._props}
+                value={pushNotifications}
+                theme={theme}
+                color={theme.colors.primary}
+                onValueChange={setPushNotifications}
+              />
+            )}
+            theme={theme}
+            left={_props => (
+              <List.Icon
+                {..._props}
+                style={{
+                  ..._props.style,
+                }}
+                icon={__props => (
+                  <Feather
+                    {...__props}
+                    name={pushNotifications ? 'bell' : 'bell-off'}
+                  />
+                )}
+              />
+            )}
+          />
+          <List.Item
+            title="Dark Mode"
+            theme={theme}
+            right={_props => (
+              <Switch
+                {..._props}
+                value={theme.dark}
+                theme={theme}
+                color={theme.colors.primary}
+                onValueChange={bool => {
+                  AsyncStorage.setItem('THEME', JSON.stringify({dark: bool}))
+                    .then(res => {
+                      dispatch<ActionType>({
+                        type: !bool
+                          ? '@THEME/TOGGLE_LIGHT'
+                          : '@THEME/TOGGLE_DARK',
+                      });
+                    })
+                    .catch(e => {
+                      Crashlytics().recordError(e);
+                    });
+                }}
+              />
+            )}
+            left={_props => (
+              <List.Icon
+                {..._props}
+                style={{
+                  ..._props.style,
+                }}
+                icon={__props => (
+                  <Matrial {...__props} name="theme-light-dark" />
+                )}
+              />
+            )}
+          />
+          <List.Item
+            title="My Posts"
+            theme={theme}
+            onPress={() => {
+              navigation.navigate('MY_POSTS', {});
+            }}
+            right={_props => (
+              <List.Icon
+                {..._props}
+                icon={__props => (
+                  <Feather {...__props} name={'chevron-right'} />
+                )}
+              />
+            )}
+            left={_props => (
+              <List.Icon
+                {..._props}
+                style={{
+                  ..._props.style,
+                }}
+                icon={__props => <Feather {...__props} name="edit-3" />}
+              />
+            )}
+          />
+          <List.Item
+            title="Logout"
+            theme={theme}
+            onPress={() => {
+              onLogOut();
+            }}
+            right={_props => (
+              <List.Icon
+                {..._props}
+                icon={__props => (
+                  <Feather {...__props} name={'chevron-right'} />
+                )}
+              />
+            )}
+            left={_props => (
+              <List.Icon
+                {..._props}
+                style={{
+                  ..._props.style,
+                }}
+                icon={__props => <Feather {...__props} name="log-out" />}
+              />
+            )}
+          />
+        </List.Section>
+      </Screen>
+    </>
   );
 };

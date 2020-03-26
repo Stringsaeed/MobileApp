@@ -5,7 +5,7 @@ import HelpApi from '@services/http';
 import {List} from 'react-native-paper';
 import {useCallback, useEffect, useState} from 'react';
 import Crashlytics from '@react-native-firebase/crashlytics';
-import {ActivityIndicator, FlatList, View} from 'react-native';
+import {ActivityIndicator, FlatList, RefreshControl, View} from 'react-native';
 import NotificationsSvg from '@theme/illustrations/undraw_subscriber_vabu.svg';
 
 export const NotificationsScreen = ({}) => {
@@ -38,6 +38,18 @@ export const NotificationsScreen = ({}) => {
       {!isLoading ? (
         <FlatList
           data={notifications}
+          refreshControl={
+            <RefreshControl
+              colors={[theme.colors.primary, theme.colors.text]}
+              refreshing={isLoading}
+              onRefresh={() => getNotifications()}
+            />
+          }
+          contentContainerStyle={
+            notifications.length
+              ? {}
+              : {flex: 1, justifyContent: 'center', alignItems: 'center'}
+          }
           ListEmptyComponent={
             <NotificationsSvg
               width={300}
@@ -49,7 +61,7 @@ export const NotificationsScreen = ({}) => {
         />
       ) : (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator color={theme.colors.text} />
+          <ActivityIndicator color={theme.colors.primary} size="large" />
         </View>
       )}
     </Screen>

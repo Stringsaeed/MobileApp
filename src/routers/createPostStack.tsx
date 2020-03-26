@@ -15,7 +15,7 @@ export default () => {
         component={AddPostScreen}
         name={'@TABS/STACK/CREATE_POST'}
         options={{
-          headerTitle: 'New Post:',
+          headerTitle: 'New Post',
           headerTitleStyle: {
             ...theme.fonts.bold,
           },

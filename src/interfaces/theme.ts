@@ -7,6 +7,7 @@ type Font = {
 
 export interface Theme {
   dark: boolean;
+  roundness: number;
   colors: {
     primary: string;
     background: string;
@@ -18,7 +19,14 @@ export interface Theme {
     teaching: string;
     food: string;
     string: string;
-    [key: string]: string;
+    surface: string;
+    accent: string;
+    error: string;
+    onSurface: string;
+    onBackground: string;
+    placeholder: string;
+    backdrop: string;
+    notification: string;
   };
   spacing: {
     xSmall: number;
@@ -29,5 +37,12 @@ export interface Theme {
   };
   fonts: {
     [key: string]: Font;
+    regular: Font;
+    medium: Font;
+    light: Font;
+    thin: Font;
+  };
+  animation: {
+    scale: number;
   };
 }

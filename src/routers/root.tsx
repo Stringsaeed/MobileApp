@@ -34,9 +34,16 @@ export default () => {
       <RootStack.Screen
         name="MY_POSTS"
         component={MyPostsScreen}
-        options={{
-          headerShown: false,
-        }}
+        options={() => ({
+          title: 'My Posts',
+          headerTitleStyle: {
+            ...theme.fonts.bold,
+          },
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+            elevation: 0,
+          },
+        })}
       />
     </RootStack.Navigator>
   );

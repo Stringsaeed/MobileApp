@@ -10,7 +10,9 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "postinstall": "patch-package",
     "release:android": "cd android && ./gradlew assembleRelease && cd ..",
-    "clean:android": "cd android && ./gradlew clean && cd .."
+    "bundle:android": "cd android && ./gradlew bundleRelease && cd ..",
+    "clean:android": "cd android && ./gradlew clean && cd ..",
+    "ts-coverage": "typescript-coverage-report"
   },
   "dependencies": {
     "@callstack/react-theme-provider": "^2.1.0",
@@ -74,7 +76,11 @@
     "metro-react-native-babel-preset": "^0.56.0",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.9.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.8.3",
+    "typescript-coverage-report": "^0.1.1"
+  },
+  "typeCoverage": {
+    "atLeast": 99
   },
   "jest": {
     "preset": "react-native",

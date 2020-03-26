@@ -7,6 +7,7 @@ import Messaging from '@react-native-firebase/messaging';
 import {getUniqueId} from 'react-native-device-info';
 import Crashlytics from '@react-native-firebase/crashlytics';
 import {getPostTypes} from './postUtils';
+import {ActionType} from '@interfaces';
 
 const checkPermissionIos = async () => {
   if (Platform.OS === 'ios') {
@@ -59,7 +60,7 @@ export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
       type: '@INIT_APP/LOADING',
     });
     const item = await AsyncStorage.getItem('@USER_LOGIN');
-
+    const theme: string | null = await AsyncStorage.getItem('THEME');
     if (Platform.OS === 'android') {
       await checkPermissionAndroid();
     } else if (Platform.OS === 'ios') {
@@ -68,6 +69,12 @@ export const initialApp: () => ThunkAction<any, any, any, any> = () => async (
       Crashlytics().log('Platform is not native');
     }
 
+    dispatch<ActionType>({
+      type:
+        theme !== null && JSON.parse(theme).dark
+          ? '@THEME/TOGGLE_DARK'
+          : '@THEME/TOGGLE_LIGHT',
+    });
     if (item) {
       const user = JSON.parse(item);
       HelpApi.interceptors.request.use(

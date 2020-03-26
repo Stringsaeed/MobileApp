@@ -2,26 +2,23 @@ import * as React from 'react';
 import {useSafeArea} from 'react-native-safe-area-context';
 import {useTheme} from '@theme';
 import {ScrollView, ScrollViewProps, StyleSheet, View} from 'react-native';
-import {useMemo} from 'react';
+import {Surface} from 'react-native-paper';
 
 interface ScreenProps extends ScrollViewProps {
   type: 'scroll' | 'static';
   children: React.ReactNode;
 }
 
-export const Screen = React.memo(({type, children, ...props}: ScreenProps) => {
+export const Screen = ({type, children, ...props}: ScreenProps) => {
   const theme = useTheme();
   const {bottom, top} = useSafeArea();
-  useMemo(() => {
-    console.log(top);
-  }, [top]);
   const style = StyleSheet.compose(
     {
       flex: 1,
       paddingTop: top,
       paddingBottom: bottom,
-      backgroundColor: theme.colors.background,
-      paddingHorizontal: theme.spacing.large,
+      // backgroundColor: theme.colors.background,
+      paddingHorizontal: theme.spacing.medium,
       overflow: 'visible',
     },
     props.style,
@@ -35,9 +32,9 @@ export const Screen = React.memo(({type, children, ...props}: ScreenProps) => {
     );
   } else {
     return (
-      <View {...props} style={style}>
+      <Surface {...props} theme={theme} style={style}>
         {children}
-      </View>
+      </Surface>
     );
   }
-});
+};

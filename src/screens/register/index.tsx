@@ -17,6 +17,7 @@ import {
   StatusBar,
   StyleSheet,
   TextStyle,
+  TouchableOpacity,
   ViewStyle,
 } from 'react-native';
 import Auth from '@react-native-firebase/auth';
@@ -134,7 +135,7 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
   };
 
   return (
-    <Screen type="static" style={styles.screen(top + theme.spacing.medium)}>
+    <Screen type="static" style={styles.screen(theme.spacing.medium)}>
       <StatusBar
         animated
         backgroundColor={theme.colors.background}
@@ -142,15 +143,8 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
         showHideTransition="slide"
         barStyle={theme.dark ? 'light-content' : 'dark-content'}
       />
-      <Header>
-        <Header.Button
-          icon="settings"
-          size={20}
-          color={theme.colors.text}
-          onPress={() => {}}
-        />
-      </Header>
       <Form
+        showsVerticalScrollIndicator={false}
         extraHeight={200}
         enableOnAndroid
         innerRef={ref => {
@@ -244,9 +238,24 @@ export const RegisterScreen: RegisterScreenType = ({navigation, route}) => {
           onBlur={formikInstance.handleBlur('password_confirmation')}
           onChangeText={formikInstance.handleChange('password_confirmation')}
         />
-        <Caption weight="regular">
-          Already have account? <Caption weight="bold">Sign In</Caption>
-        </Caption>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.replace('LOGIN_SCREEN', {});
+          }}>
+          <Caption
+            weight="regular"
+            style={{
+              padding: theme.spacing.medium,
+              color: theme.colors.text + '3f',
+            }}>
+            Already have account?{' '}
+            <Caption
+              style={{fontSize: 14, color: theme.colors.text}}
+              weight="bold">
+              Sign In
+            </Caption>
+          </Caption>
+        </TouchableOpacity>
         <Button
           style={styles.button}
           loadingColor={theme.colors.background}

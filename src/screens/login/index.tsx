@@ -109,7 +109,7 @@ export const LoginScreen: LoginScreenType = ({navigation, route}) => {
   });
 
   return (
-    <Screen type="static" style={styles.screen(top + theme.spacing.medium)}>
+    <Screen type="static" style={styles.screen(theme.spacing.medium)}>
       <StatusBar
         animated
         backgroundColor={theme.colors.background}
@@ -117,18 +117,6 @@ export const LoginScreen: LoginScreenType = ({navigation, route}) => {
         showHideTransition="slide"
         barStyle={theme.dark ? 'light-content' : 'dark-content'}
       />
-      <Header>
-        <Header.Button
-          icon="settings"
-          size={20}
-          color={theme.colors.text}
-          onPress={() =>
-            dispatch<ActionType>({
-              type: theme.dark ? '@THEME/TOGGLE_LIGHT' : '@THEME/TOGGLE_DARK',
-            })
-          }
-        />
-      </Header>
       <Form>
         <LoginIllustration
           height={150}

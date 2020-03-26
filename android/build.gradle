@@ -38,3 +38,9 @@ ext {
     compileSdkVersion = 28
     targetSdkVersion = 28
 }
+
+configurations.all {
+    resolutionStrategy {
+        force "com.facebook.soloader:soloader:0.8.2"
+    }
+}

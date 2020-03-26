@@ -1,4 +1,4 @@
-package com.help;
+package com.stringsaeed.help;
 
 import android.app.Application;
 import android.content.Context;
