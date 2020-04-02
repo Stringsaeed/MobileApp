@@ -2,6 +2,8 @@ import * as React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {AddPostScreen} from '@screens';
 import {useTheme} from '@theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Appbar} from 'react-native-paper';
 
 const HomeStack = createStackNavigator<{
   '@TABS/STACK/CREATE_POST': {};
@@ -19,10 +21,16 @@ export default () => {
           headerTitleStyle: {
             ...theme.fonts.bold,
           },
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-            elevation: 0,
-          },
+          header: ({scene}) => (
+            <SafeAreaView>
+              <Appbar.Header>
+                <Appbar.Content
+                  title={scene.descriptor.options.headerTitle}
+                  titleStyle={scene.descriptor.options.headerTitleStyle}
+                />
+              </Appbar.Header>
+            </SafeAreaView>
+          ),
         }}
       />
     </HomeStack.Navigator>

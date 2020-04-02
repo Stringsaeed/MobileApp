@@ -1,7 +1,7 @@
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import * as React from 'react';
 import {useTheme} from '@theme';
-import {List, Switch} from 'react-native-paper';
+import {List, Switch, Dialog, Paragraph, Button} from 'react-native-paper';
 import Auth from '@react-native-firebase/auth';
 import {Screen, Text, Title} from '@components';
 import {useDispatch, useSelector} from 'react-redux';
@@ -11,6 +11,8 @@ import Matrial from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import Crashlytics from '@react-native-firebase/crashlytics';
+import Color from 'color';
+import {StatusBar, StatusBarStyle} from 'react-native';
 
 interface ProfileProps {
   navigation: BottomTabNavigationProp<ParamsList>;
@@ -20,8 +22,15 @@ type ProfileScreenType = React.FunctionComponent<ProfileProps>;
 
 export const ProfileScreen: ProfileScreenType = ({navigation}) => {
   const [pushNotifications, setPushNotifications] = useState<boolean>(true);
-
+  const [visible, setVisible] = useState<boolean>(false);
   const theme = useTheme();
+  useEffect(() => {
+    StatusBar.setBarStyle(
+      theme.dark ? 'light-content' : ('dar-content' as StatusBarStyle),
+      true,
+    );
+  }, [theme.dark]);
+
   const dispatch = useDispatch();
   const {name, email, phone} = useSelector<ReduxState, UserStore>(
     state => state.user,
@@ -162,7 +171,7 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
             title="Logout"
             theme={theme}
             onPress={() => {
-              onLogOut();
+              setVisible(true);
             }}
             right={_props => (
               <List.Icon
@@ -183,6 +192,16 @@ export const ProfileScreen: ProfileScreenType = ({navigation}) => {
             )}
           />
         </List.Section>
+        <Dialog visible={visible} dismissable={false}>
+          <Dialog.Title>Logout?</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Are you sure?</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => onLogOut()}>Yes</Button>
+            <Button onPress={() => setVisible(false)}>Cancel</Button>
+          </Dialog.Actions>
+        </Dialog>
       </Screen>
     </>
   );

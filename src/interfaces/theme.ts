@@ -27,6 +27,7 @@ export interface Theme {
     placeholder: string;
     backdrop: string;
     notification: string;
+    primaryDark?: string;
   };
   spacing: {
     xSmall: number;

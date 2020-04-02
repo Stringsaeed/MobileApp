@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Surface} from 'react-native-paper';
 dayjs.extend(RelativeTime);
 
 interface PostStyle {
@@ -29,6 +30,7 @@ interface PostStyle {
 }
 interface PostProps {
   item: Post;
+  onPress?: () => void;
 }
 
 type PostComponentType = React.FunctionComponent<PostProps & PostStyle>;
@@ -40,78 +42,78 @@ export const PostComponent: PostComponentType = ({
   type,
   date,
   body,
+  onPress,
 }) => {
   const theme = useTheme();
   const CommentIcon = Icons.comment;
-  const navigation = useNavigation<StackNavigationProp<any>>();
+  // const navigation = useNavigation<StackNavigationProp<any>>();
+  // // let x = () =>
+  // //   navigation.push('@POST_SCREEN', {
+  // //     item: item,
+  // //   });
   const readableDate = dayjs(dayjs.unix(item.created_at)).fromNow();
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={() =>
-        navigation.push('@POST_SCREEN', {
-          item: item,
-        })
-      }
-      style={[styles.container, {borderColor: theme.colors.text}, container]}>
-      <Text weight="regular">
-        <Text weight="bold">{item.user && item.user.name}</Text> in{' '}
-        <PostType type={item.type} typeStyle={type} />
-      </Text>
-      <Text weight="bold" style={[styles.title, title]}>
-        {item.title}
-      </Text>
-      <View style={{paddingHorizontal: 8}}>
-        <ReadMore
-          numberOfLines={4}
-          renderTruncatedFooter={() => {
-            return (
-              <Caption
-                weight="bold"
-                onPress={() => {}}
-                style={{color: COLORS.readMore}}>
-                Read More
-              </Caption>
-            );
-          }}>
-          <Text
-            weight="medium"
-            ellipsizeMode="clip"
-            style={[styles.body, body]}>
-            {item.body}
-          </Text>
-        </ReadMore>
-      </View>
-      <View style={{marginBottom: 16}} />
-      {item.image ? (
-        <Image
-          source={{uri: item.image}}
-          style={{width: '100%', height: 300, borderRadius: 20}}
-        />
-      ) : null}
-      <View style={{marginBottom: 16}} />
-
-      <View style={styles.row}>
-        <View
-          style={{
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
-          <Text weight="regular">{item.comments}</Text>
-          <CommentIcon
-            style={{marginHorizontal: theme.spacing.medium}}
-            fill={theme.colors.text}
-            width={20}
-            height={20}
-          />
+    <TouchableOpacity activeOpacity={1} onPress={onPress}>
+      <Surface style={[styles.container, container]}>
+        <Text weight="regular">
+          <Text weight="bold">{item.user && item.user.name}</Text> in{' '}
+          <PostType type={item.type} typeStyle={type} />
+        </Text>
+        <Text weight="bold" style={[styles.title, title]}>
+          {item.title}
+        </Text>
+        <View style={{paddingHorizontal: 8}}>
+          <ReadMore
+            numberOfLines={4}
+            renderTruncatedFooter={() => {
+              return (
+                <Caption
+                  weight="bold"
+                  onPress={() => {}}
+                  style={{color: COLORS.readMore}}>
+                  Read More
+                </Caption>
+              );
+            }}>
+            <Text
+              weight="medium"
+              ellipsizeMode="clip"
+              style={[styles.body, body]}>
+              {item.body}
+            </Text>
+          </ReadMore>
         </View>
-        <Caption
-          weight="light"
-          style={[styles.date, {color: theme.colors.text}, date]}>
-          {readableDate}
-        </Caption>
-      </View>
+        <View style={{marginBottom: 16}} />
+        {item.image ? (
+          <Image
+            source={{uri: item.image}}
+            style={{width: '100%', height: 300, borderRadius: 20}}
+          />
+        ) : null}
+        <View style={{marginBottom: 16}} />
+
+        <View style={styles.row}>
+          <View
+            style={{
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              flexDirection: 'row',
+            }}>
+            <Text weight="regular">{item.comments}</Text>
+            <CommentIcon
+              style={{marginHorizontal: theme.spacing.medium}}
+              fill={theme.colors.text}
+              width={20}
+              height={20}
+            />
+          </View>
+          <Caption
+            weight="light"
+            style={[styles.date, {color: theme.colors.text}, date]}>
+            {readableDate}
+          </Caption>
+        </View>
+      </Surface>
     </TouchableOpacity>
   );
 };

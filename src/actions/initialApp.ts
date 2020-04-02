@@ -11,21 +11,21 @@ import {ActionType} from '@interfaces';
 
 const checkPermissionIos = async () => {
   if (Platform.OS === 'ios') {
-    const result = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    console.log(result);
-    switch (result) {
-      case RESULTS.DENIED:
-        console.log(
-          'The permission has not been requested / is denied but requestable',
-        );
-        break;
-      case RESULTS.GRANTED:
-        console.log('The permission is granted');
-        break;
-      case RESULTS.BLOCKED:
-        console.log('The permission is denied and not requestable anymore');
-        break;
-    }
+    // const result = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    // console.log(result);
+    // switch (result) {
+    //   case RESULTS.DENIED:
+    //     console.log(
+    //       'The permission has not been requested / is denied but requestable',
+    //     );
+    //     break;
+    //   case RESULTS.GRANTED:
+    //     console.log('The permission is granted');
+    //     break;
+    //   case RESULTS.BLOCKED:
+    //     console.log('The permission is denied and not requestable anymore');
+    //     break;
+    // }
   }
   return;
 };

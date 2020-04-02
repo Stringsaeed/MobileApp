@@ -7,21 +7,23 @@ import {
   StatusBar,
   View,
 } from 'react-native';
-import {PostComponent, Screen} from '@components';
+import Color from 'color';
+import {Screen} from '@components';
+import {PostComponent} from '@components/newPost';
 import {HomeStore, ParamsList, ReduxState} from '@interfaces';
 import {useDispatch, useSelector} from 'react-redux';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {getHome} from '@actions';
 import {Post} from '@interfaces/post';
 import {Snackbar} from 'react-native-paper';
 import messaging, {
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
-import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import HomeEmpty from '@theme/illustrations/undraw_body_text_l3ld.svg';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 interface HomeProps {
-  navigation: BottomTabNavigationProp<ParamsList>;
+  navigation: StackNavigationProp<ParamsList>;
 }
 
 export const HomeScreen = ({navigation}: HomeProps) => {
@@ -64,6 +66,12 @@ export const HomeScreen = ({navigation}: HomeProps) => {
   }, []);
 
   const theme = useTheme();
+
+  const statusBarColor = useMemo(
+    () => Color(theme.colors.primary).darken(0.5),
+    [theme.colors.primary],
+  );
+
   const dispatch = useDispatch();
   const {isLoading, isRefreshing, data} = useSelector<ReduxState, HomeStore>(
     state => state.home,
@@ -81,8 +89,10 @@ export const HomeScreen = ({navigation}: HomeProps) => {
     return (
       <PostComponent
         item={item}
-        container={{
-          padding: 5,
+        onPress={() => {
+          navigation.push('@POST_SCREEN', {
+            item: item,
+          });
         }}
       />
     );
@@ -96,7 +106,7 @@ export const HomeScreen = ({navigation}: HomeProps) => {
         style={{paddingTop: theme.spacing.small}}>
         <StatusBar
           animated
-          backgroundColor={theme.colors.background}
+          backgroundColor={statusBarColor.toString()}
           translucent
           showHideTransition="slide"
           barStyle={theme.dark ? 'light-content' : 'dark-content'}

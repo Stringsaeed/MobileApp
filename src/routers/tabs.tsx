@@ -19,13 +19,7 @@ export default () => {
   const Account = Icons.account;
   const OutlinedAccount = Icons.accountOutlined;
   return (
-    <Tabs.Navigator
-      tabBarOptions={{
-        showLabel: false,
-        style: {
-          elevation: 6,
-        },
-      }}>
+    <Tabs.Navigator>
       <Tabs.Screen
         name="@TABS/HOME"
         component={HomeStack}
@@ -56,7 +50,7 @@ export default () => {
         name="@TABS/NOTIFICATIONS"
         component={NotificationsStack}
         options={{
-          tabBarLabel: 'notifications',
+          tabBarLabel: 'Notifications',
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <Notifications fill={color} width={20} height={20} />

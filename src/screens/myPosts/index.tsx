@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {Header, PostComponent, Screen} from '@components';
+import {Screen} from '@components';
+import {PostComponent} from '@components/newPost';
 import {useSafeArea} from 'react-native-safe-area-context';
 import {useTheme} from '@theme';
 import {
@@ -142,14 +143,7 @@ export function MyPostsScreen() {
   }, [getMyPosts]);
 
   const renderPost = ({item}: {item: Post}) => {
-    return (
-      <PostComponent
-        item={item}
-        container={{
-          padding: 5,
-        }}
-      />
-    );
+    return <PostComponent item={item} />;
   };
 
   return (
@@ -157,14 +151,6 @@ export function MyPostsScreen() {
       type="static"
       contentContainerStyle={{flex: 1}}
       style={{paddingTop: theme.spacing.medium}}>
-      <StatusBar
-        animated
-        backgroundColor={theme.colors.background}
-        translucent
-        showHideTransition="slide"
-        barStyle={theme.dark ? 'light-content' : 'dark-content'}
-      />
-      {/*<Header title="My Posts" />*/}
       {state.isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator color={theme.colors.text} />

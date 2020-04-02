@@ -2,18 +2,13 @@ import * as React from 'react';
 import {useTheme} from '@theme';
 import HelpApi from '@services/http';
 import {Post} from '@interfaces/post';
-import {Snackbar} from 'react-native-paper';
+import {Snackbar, TextInput} from 'react-native-paper';
 import {RouteProp} from '@react-navigation/native';
 import {useCallback, useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  StatusBar,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {Label, PostComponent, Screen, Form, Text} from '@components';
+import color from 'color';
+import {ActivityIndicator, View, ViewStyle} from 'react-native';
+import {Label, Screen, Form, Text} from '@components';
+import {PostComponent} from '@components/newPost';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {List} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
@@ -77,16 +72,21 @@ export const PostScreen: PostScreenType = ({route}) => {
     getPost().then(r => console.log(r));
   }, [getPost]);
 
+  const renderRight = (_props: {size?: number; color?: string}) => (
+    <List.Icon
+      {..._props}
+      icon={__props => <Feather name="edit" {...__props} />}
+    />
+  );
+
   return (
     <Screen
       type="scroll"
-      // contentContainerStyle={{flex: 1}}
-      style={{
+      // style={{paddingHorizontal: 0}}
+      contentContainerStyle={{
         flex: 1,
-        paddingTop: theme.spacing.medium,
-        backgroundColor: theme.colors.background,
+        paddingTop: 0,
       }}>
-      <StatusBar backgroundColor={theme.colors.background} />
       {isLoading ? (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator />
@@ -100,18 +100,24 @@ export const PostScreen: PostScreenType = ({route}) => {
                 data.comments instanceof Array ? data.comments.length : 0,
             }}
           />
-          <Form.Item
-            label="Add comment"
-            placeholder="place your comment here"
-            value={comment}
-            onChangeText={setComment}
-            onSubmitEditing={() => {
-              submitComment();
-            }}
-            container={{paddingHorizontal: 0}}
-          />
-          <View>
-            <Label weight="bold">Comments:</Label>
+          <List.Section
+            style={{
+              backgroundColor: color(theme.colors.surface)
+                .mix(color('white'), 0.07)
+                .hex(),
+            }}>
+            <List.Subheader>Comments</List.Subheader>
+            <TextInput
+              label="Add comment"
+              dense
+              value={comment}
+              mode="outlined"
+              onChangeText={setComment}
+              onSubmitEditing={() => {
+                submitComment();
+              }}
+              style={{marginHorizontal: theme.spacing.medium}}
+            />
             {data.comments instanceof Array && data.comments.length ? (
               data.comments.map(
                 (_comment: {
@@ -120,23 +126,13 @@ export const PostScreen: PostScreenType = ({route}) => {
                   body: string;
                 }) => {
                   return (
-                    <View key={_comment.id} style={{marginBottom: 5}}>
-                      <List.Item
-                        theme={theme}
-                        title={_comment.user.name}
-                        description={_comment.body}
-                        right={_props => {
-                          return (
-                            <List.Icon
-                              {..._props}
-                              icon={__props => (
-                                <Feather name="edit" {...__props} />
-                              )}
-                            />
-                          );
-                        }}
-                      />
-                    </View>
+                    <List.Item
+                      key={_comment.id}
+                      title={_comment.user.name}
+                      description={_comment.body}
+                      style={{borderBottomWidth: 0.4}}
+                      right={renderRight}
+                    />
                   );
                 },
               )
@@ -147,7 +143,7 @@ export const PostScreen: PostScreenType = ({route}) => {
                 </Text>
               </View>
             )}
-          </View>
+          </List.Section>
         </>
       )}
       <Snackbar
@@ -161,11 +157,3 @@ export const PostScreen: PostScreenType = ({route}) => {
     </Screen>
   );
 };
-
-const styles = StyleSheet.create<{[key: string]: ViewStyle | TextStyle}>({
-  row: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-});

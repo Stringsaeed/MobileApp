@@ -9,8 +9,9 @@ export const DarkTheme: Theme = {
   colors: {
     ...RNDarkTheme.colors,
     ...PaperDarkTheme.colors,
-    primary: '#B3A7FF',
-    background: COLORS.black,
+    // primary: '#B3A7FF',
+    primaryDark: '#030303',
+    // background: COLORS.black,
     // disabled: COLORS.disabled,
     general: '#6642f7',
     teaching: COLORS.teaching,

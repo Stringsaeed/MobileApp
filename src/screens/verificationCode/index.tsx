@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {StyleSheet, TextStyle, ViewStyle} from 'react-native';
 
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
+// import {
+//   CodeField,
+//   Cursor,
+//   useBlurOnFulfill,
+//   useClearByFocusCell,
+// } from 'react-native-confirmation-code-field';
 import {FunctionComponent, useEffect, useState} from 'react';
 import {Header, Label, Screen, Text, Title} from '@components';
 import {RouteProp} from '@react-navigation/native';
@@ -35,11 +35,11 @@ export const VerificationCodeScreen: VSCodeType = ({
   dismiss,
 }) => {
   const [value, setValue] = useState('');
-  const ref = useBlurOnFulfill({value, cellCount: 6});
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
-  });
+  // const ref = useBlurOnFulfill({value, cellCount: 6});
+  // const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+  //   value,
+  //   setValue,
+  // });
   const theme = useTheme();
   const {top} = useSafeArea();
 
@@ -56,24 +56,24 @@ export const VerificationCodeScreen: VSCodeType = ({
             Verification Code has been sent to{' '}
             <Text weight="bold">{phone}</Text>
           </Text>
-          <CodeField
-            ref={ref}
-            {...props}
-            value={value}
-            onChangeText={setValue}
-            cellCount={6}
-            rootStyle={styles.codeFiledRoot}
-            keyboardType="number-pad"
-            renderCell={({index, symbol, isFocused}) => (
-              <Text
-                weight="bold"
-                key={index}
-                style={[styles.cell, isFocused && styles.focusCell]}
-                onLayout={getCellOnLayoutHandler(index)}>
-                {symbol || (isFocused ? <Cursor /> : null)}
-              </Text>
-            )}
-          />
+          {/*<CodeField*/}
+          {/*  ref={ref}*/}
+          {/*  {...props}*/}
+          {/*  value={value}*/}
+          {/*  onChangeText={setValue}*/}
+          {/*  cellCount={6}*/}
+          {/*  rootStyle={styles.codeFiledRoot}*/}
+          {/*  keyboardType="number-pad"*/}
+          {/*  renderCell={({index, symbol, isFocused}) => (*/}
+          {/*    <Text*/}
+          {/*      weight="bold"*/}
+          {/*      key={index}*/}
+          {/*      style={[styles.cell, isFocused && styles.focusCell]}*/}
+          {/*      onLayout={getCellOnLayoutHandler(index)}>*/}
+          {/*      {symbol || (isFocused ? <Cursor /> : null)}*/}
+          {/*    </Text>*/}
+          {/*  )}*/}
+          {/*/>*/}
           <Button
             compact
             theme={theme}

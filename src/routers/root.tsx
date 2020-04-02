@@ -2,9 +2,11 @@ import * as React from 'react';
 import {useTheme} from '@theme';
 import {MyPostsScreen, PostScreen} from '@screens';
 import {ParamsList} from '@interfaces';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 
 import Tabs from './tabs';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Appbar} from 'react-native-paper';
 
 const RootStack = createStackNavigator<ParamsList>();
 
@@ -25,10 +27,20 @@ export default () => {
           headerTitleStyle: {
             ...theme.fonts.bold,
           },
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-            elevation: 0,
-          },
+          header: ({scene, navigation}) => (
+            <SafeAreaView>
+              <Appbar.Header>
+                {navigation.canGoBack() ? (
+                  <Appbar.BackAction onPress={() => navigation.goBack()} />
+                ) : null}
+                <Appbar.Content
+                  title={scene.descriptor.options.title}
+                  titleStyle={scene.descriptor.options.headerTitleStyle}
+                />
+              </Appbar.Header>
+            </SafeAreaView>
+          ),
+          ...TransitionPresets.RevealFromBottomAndroid,
         })}
       />
       <RootStack.Screen
@@ -39,10 +51,20 @@ export default () => {
           headerTitleStyle: {
             ...theme.fonts.bold,
           },
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-            elevation: 0,
-          },
+          header: ({scene, navigation}) => (
+            <SafeAreaView>
+              <Appbar.Header>
+                {navigation.canGoBack() ? (
+                  <Appbar.BackAction onPress={() => navigation.goBack()} />
+                ) : null}
+                <Appbar.Content
+                  title={scene.descriptor.options.title}
+                  titleStyle={scene.descriptor.options.headerTitleStyle}
+                />
+              </Appbar.Header>
+            </SafeAreaView>
+          ),
+          ...TransitionPresets.RevealFromBottomAndroid,
         })}
       />
     </RootStack.Navigator>

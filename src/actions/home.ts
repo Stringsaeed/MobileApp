@@ -20,7 +20,7 @@ export const getHome = (
             res.coords.latitude
           }&longitude=${
             res.coords.longitude
-          }&type_id=${type_id}&offer_help=${offer_help}`,
+          }&type_id=${type_id}&offer_help=${offer_help}&own=true`,
         );
         console.log(res, response);
         dispatch({

@@ -1,8 +1,15 @@
 import * as React from 'react';
 import {useSafeArea} from 'react-native-safe-area-context';
 import {useTheme} from '@theme';
-import {ScrollView, ScrollViewProps, StyleSheet, View} from 'react-native';
-import {Surface} from 'react-native-paper';
+import {
+  ScrollView,
+  ScrollViewProps,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {useMemo} from 'react';
+import Color from 'color';
 
 interface ScreenProps extends ScrollViewProps {
   type: 'scroll' | 'static';
@@ -12,12 +19,18 @@ interface ScreenProps extends ScrollViewProps {
 export const Screen = ({type, children, ...props}: ScreenProps) => {
   const theme = useTheme();
   const {bottom, top} = useSafeArea();
+
+  const statusBarColor = useMemo(
+    () => Color(theme.colors.primary).darken(0.5),
+    [theme.colors.primary],
+  );
+
   const style = StyleSheet.compose(
     {
       flex: 1,
       paddingTop: top,
       paddingBottom: bottom,
-      // backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.background,
       paddingHorizontal: theme.spacing.medium,
       overflow: 'visible',
     },
@@ -26,15 +39,17 @@ export const Screen = ({type, children, ...props}: ScreenProps) => {
 
   if (type === 'scroll') {
     return (
-      <ScrollView {...props} style={style}>
+      <ScrollView {...props} contentContainerStyle={style}>
+        <StatusBar backgroundColor={statusBarColor.toString()} />
         {children}
       </ScrollView>
     );
   } else {
     return (
-      <Surface {...props} theme={theme} style={style}>
+      <View {...props} style={style}>
+        <StatusBar backgroundColor={statusBarColor.toString()} />
         {children}
-      </Surface>
+      </View>
     );
   }
 };

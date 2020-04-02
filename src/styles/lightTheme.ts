@@ -9,7 +9,7 @@ export const LightTheme: Theme = {
   colors: {
     ...RNLightTheme.colors,
     ...DefaultTheme.colors,
-    primary: '#B3A7FF',
+    // primary: '#B3A7FF',
     // disabled: '#989898',
     general: '#3700b3',
     teaching: COLORS.teaching,
